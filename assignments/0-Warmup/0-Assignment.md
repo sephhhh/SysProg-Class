@@ -41,4 +41,9 @@ https://github.com/sephhhh/SysProg-Class.git
 I want to learn a lot.
 
 5. Briefly describe any concerns you might be having with being successful in this class (if any).
+<<<<<<< HEAD
 No concerns.
+=======
+
+
+>>>>>>> upstream/main
