@@ -16,6 +16,7 @@ EOF
     #if the test fails
     echo "Captured stdout:" 
     echo "Output: $output"
+    echo "expected: $expected_output"
     echo "Exit Status: $status"
 
     # Check exact match
