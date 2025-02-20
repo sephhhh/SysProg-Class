@@ -8,7 +8,7 @@ This content builds on the prior assignment; if you need a refresher on what a s
 
 The `dsh` assignments are meant to be additive. Much of the parsing logic from the last assignement can be re-used in this assignement. The structures are a little different so you might have to refactor some of your code, but that's a great practical lesson in software engineering; the highest quality results come from frequent iteration.
 
-The next section highlights the differences (both conceptually and in file structure) from the prior assignement.
+The next section highlights the differences (both conceptually and in file structure) from the prior assignment.
 
 # Differences from Part 1 Assignment
 

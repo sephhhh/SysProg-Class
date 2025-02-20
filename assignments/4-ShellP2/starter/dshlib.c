@@ -51,44 +51,105 @@
  *  Standard Library Functions You Might Want To Consider Using (assignment 2+)
  *      fork(), execvp(), exit(), chdir()
  */
+void parse_command(cmd_buff_t *cmd_buff) {
+    cmd_buff->argc = 0;
+    char *ptr = cmd_buff->_cmd_buffer;
+    int in_quotes = 0;
+
+    while (*ptr) {
+        while (*ptr == ' ' && !in_quotes) ptr++;
+
+        if (*ptr == '\0') break; 
+
+        if (*ptr == '"') {
+            in_quotes = !in_quotes;
+            ptr++;
+        }
+
+        cmd_buff->argv[cmd_buff->argc++] = ptr;
+
+        while (*ptr) {
+            if (*ptr == '"' && in_quotes) {
+                in_quotes = 0;
+                *ptr = '\0'; 
+                ptr++;
+                break;
+            }
+            if (!in_quotes && *ptr == ' ') {
+                *ptr = '\0';
+                ptr++;
+                break;
+            }
+            ptr++;
+        }
+        
+        if (cmd_buff->argc >= ARG_MAX - 1) break;
+    }
+
+    cmd_buff->argv[cmd_buff->argc] = NULL;
+}
+
 int exec_local_cmd_loop()
 {
-    char cmd_buff[SH_CMD_MAX]; // Fix memory allocation issue
+    cmd_buff_t cmd_buff;
     int rc = OK;
+
+    cmd_buff._cmd_buffer = (char *)malloc(SH_CMD_MAX);
+    if (cmd_buff._cmd_buffer == NULL) {
+        return ERR_MEMORY;
+    }
 
     while (1) {
         printf("%s", SH_PROMPT);
-        if (fgets(cmd_buff, SH_CMD_MAX, stdin) == NULL) {
+        if (fgets(cmd_buff._cmd_buffer, SH_CMD_MAX, stdin) == NULL) {
             printf("\n");
             break;
         }
 
         // Remove the trailing \n from cmd_buff
-        cmd_buff[strcspn(cmd_buff, "\n")] = '\0';
+        cmd_buff._cmd_buffer[strcspn(cmd_buff._cmd_buffer, "\n")] = '\0';
 
         // Check for empty input
-        if (strlen(cmd_buff) == 0) {
+        if (strlen(cmd_buff._cmd_buffer) == 0) {
             printf("%s\n", CMD_WARN_NO_CMD);
             continue;
         }
 
         // Check for exit command
-        if (strcmp(cmd_buff, EXIT_CMD) == 0) {
+        if (strcmp(cmd_buff._cmd_buffer, EXIT_CMD) == 0) {
             break;
         }
 
-        // Tokenize input
-        char *args[ARG_MAX];
-        int arg_count = 0;
-        char *token = strtok(cmd_buff, " ");
-        while (token != NULL && arg_count < ARG_MAX - 1) {
-            args[arg_count++] = token;
-            token = strtok(NULL, " ");
+        parse_command(&cmd_buff);
+
+if (strcmp(cmd_buff.argv[0], "cd") == 0) {
+    if (cmd_buff.argc < 2) {
+        chdir(getenv("tmp"));
+    } else {
+        if (chdir(cmd_buff.argv[1]) != 0) {
+            perror("chdir failed");
         }
-        args[arg_count] = NULL; // Null-terminate the argument list
-
-
     }
+    continue;
+}
+
+        pid_t pid = fork();
+        if (pid == -1) {
+            perror("fork failed");
+            rc = -1;
+            break;
+        } else if (pid == 0) {
+            if (execvp(cmd_buff.argv[0], cmd_buff.argv) == -1) {
+                perror("execvp failed");
+                exit(EXIT_FAILURE);
+            }
+        } else {
+            int status;
+            waitpid(pid, &status, 0);
+        }
+    
+    }
+    free(cmd_buff._cmd_buffer);
 
     return rc;
 }
