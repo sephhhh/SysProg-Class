@@ -1,6 +1,6 @@
+# Compiler settings
 CC = gcc
-CFLAGS = -Wall -Wextra -g -I/opt/homebrew/include
-LDFLAGS = -L/opt/homebrew/lib -largp
+CFLAGS = -Wall -Wextra -g
 
 # Target executable name
 TARGET = dsh
@@ -14,7 +14,7 @@ all: $(TARGET)
 
 # Compile source to executable
 $(TARGET): $(SRCS) $(HDRS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(SRCS) $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(SRCS)
 
 # Clean up build files
 clean:

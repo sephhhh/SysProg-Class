@@ -29,7 +29,7 @@ pwd
 EOF
 
     [ "$status" -eq 0 ]
-    [ -n "$output" ] 
+    [ -n "$output" ]
 }
 
 @test "Check exit command execution" {
@@ -38,7 +38,7 @@ exit
 EOF
 
     [ "$status" -eq 0 ]
-    [ -n "$output" ] 
+    [ -n "$output" ]
 }
 
 @test "Check stop-server command execution" {
@@ -47,7 +47,7 @@ stop-server
 EOF
 
     [ "$status" -eq 0 ]
-    [ -n "$output" ] 
+    [ -n "$output" ]
 }
 
 @test "Check valid 'cd' command" {
@@ -55,7 +55,7 @@ EOF
 cd bats
 EOF
     echo "$output" | grep -q "cd successful"
-    [ "$status" -eq 0 ] 
+    [ "$status" -eq 0 ]
 }
 
 @test "Check invalid 'cd' command" {
@@ -63,17 +63,9 @@ EOF
 cd invalid_directory
 EOF
     echo "$output" | grep -q "cd failed"
-    [ "$status" -eq 0 ] 
-}
-
-@test "Check echo command execution" {
-    run ./dsh <<EOF
-echo "Hello, World!"
-EOF
-
     [ "$status" -eq 0 ]
-    echo "$output" | grep -q "Hello, World!"
 }
+
 
 @test "Check piping between commands" {
     run ./dsh <<EOF
@@ -87,13 +79,19 @@ EOF
 #test cases for client/server one
 
 @test "Check valid 'ls' command on client/server side" {
-    ./dsh -s &
+    ./dsh -s -i 0.0.0.0 -p 1234 &
 
     server_pid=$!
+    echo "Started server with PID: $server_pid"
 
     sleep 1
 
-    run ./dsh -c <<EOF
+    if ! ps -p $server_pid > /dev/null; then
+        echo "Server failed to start. Exiting test."
+        return 1
+    fi
+
+    run ./dsh -c -i 127.0.0.1 -p 1234 <<EOF
 ls
 exit
 EOF
@@ -109,13 +107,19 @@ EOF
 }
 
 @test "Check if dsh starts successfully on client/server side" {
-    ./dsh -s &
+    ./dsh -s -i 0.0.0.0 -p 1234 &
 
     server_pid=$!
+    echo "Started server with PID: $server_pid"
 
     sleep 1
 
-    run ./dsh -c <<EOF
+    if ! ps -p $server_pid > /dev/null; then
+        echo "Server failed to start. Exiting test."
+        return 1
+    fi
+
+    run ./dsh -c -i 127.0.0.1 -p 1234 <<EOF
 exit
 EOF
 
@@ -130,13 +134,19 @@ EOF
 }
 
 @test "Check valid 'pwd' command on client/server side" {
-    ./dsh -s &
+    ./dsh -s -i 0.0.0.0 -p 1234 &
 
     server_pid=$!
+    echo "Started server with PID: $server_pid"
 
     sleep 1
 
-    run ./dsh -c <<EOF
+    if ! ps -p $server_pid > /dev/null; then
+        echo "Server failed to start. Exiting test."
+        return 1
+    fi
+
+    run ./dsh -c -i 127.0.0.1 -p 1234 <<EOF
 pwd
 exit
 EOF
@@ -152,13 +162,19 @@ EOF
 }
 
 @test "Check valid 'exit' command on client/server side" {
-    ./dsh -s &
+    ./dsh -s -i 0.0.0.0 -p 1234 &
 
     server_pid=$!
+    echo "Started server with PID: $server_pid"
 
     sleep 1
 
-    run ./dsh -c <<EOF
+    if ! ps -p $server_pid > /dev/null; then
+        echo "Server failed to start. Exiting test."
+        return 1
+    fi
+
+    run ./dsh -c -i 127.0.0.1 -p 1234 <<EOF
 exit
 EOF
 
@@ -173,13 +189,19 @@ EOF
 }
 
 @test "Check valid 'stop-server' command on client/server side" {
-    ./dsh -s &
+    ./dsh -s -i 0.0.0.0 -p 1234 &
 
     server_pid=$!
+    echo "Started server with PID: $server_pid"
 
     sleep 1
 
-    run ./dsh -c <<EOF
+    if ! ps -p $server_pid > /dev/null; then
+        echo "Server failed to start. Exiting test."
+        return 1
+    fi
+
+    run ./dsh -c -i 127.0.0.1 -p 1234 <<EOF
 stop-server
 EOF
 
@@ -194,13 +216,19 @@ EOF
 }
 
 @test "Check valid 'cd' command on client/server side" {
-    ./dsh -s &
+    ./dsh -s -i 0.0.0.0 -p 1234 &
 
     server_pid=$!
+    echo "Started server with PID: $server_pid"
 
     sleep 1
 
-    run ./dsh -c <<EOF
+    if ! ps -p $server_pid > /dev/null; then
+        echo "Server failed to start. Exiting test."
+        return 1
+    fi
+
+    run ./dsh -c -i 127.0.0.1 -p 1234 <<EOF
 cd bats
 exit
 EOF
@@ -219,13 +247,19 @@ EOF
 }
 
 @test "Check invalid 'cd' command on client/server side" {
-    ./dsh -s &
+    ./dsh -s -i 0.0.0.0 -p 1234 &
 
     server_pid=$!
+    echo "Started server with PID: $server_pid"
 
     sleep 1
 
-    run ./dsh -c <<EOF
+    if ! ps -p $server_pid > /dev/null; then
+        echo "Server failed to start. Exiting test."
+        return 1
+    fi
+
+    run ./dsh -c -i 127.0.0.1 -p 1234 <<EOF
 cd invalidDirectory
 exit
 EOF
@@ -244,13 +278,19 @@ EOF
 }
 
 @test "Check valid 'echo' command on client/server side" {
-    ./dsh -s &
+    ./dsh -s -i 0.0.0.0 -p 1234 &
 
     server_pid=$!
+    echo "Started server with PID: $server_pid"
 
     sleep 1
 
-    run ./dsh -c <<EOF
+    if ! ps -p $server_pid > /dev/null; then
+        echo "Server failed to start. Exiting test."
+        return 1
+    fi
+
+    run ./dsh -c -i 127.0.0.1 -p 1234 <<EOF
 echo "Hello, World!"
 exit
 EOF
@@ -266,18 +306,26 @@ EOF
 }
 
 @test "Check valid piping between commands on client/server side" {
-    ./dsh -s &
+    ./dsh -s -i 0.0.0.0 -p 1234 &
 
     server_pid=$!
+    echo "Started server with PID: $server_pid"
 
     sleep 1
 
-    run ./dsh -c <<EOF
+    if ! ps -p $server_pid > /dev/null; then
+        echo "Server failed to start. Exiting test."
+        return 1
+    fi
+
+    run ./dsh -c -i 127.0.0.1 -p 1234 <<EOF
 ls | grep dshlib.c
 exit
 EOF
 
     [ "$status" -eq 0 ]
+
+    echo "$output" | grep "dshlib.c"
 
     if ps -p $server_pid > /dev/null; then
         echo "Killing server process with PID $server_pid"
